@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "dev.frogman.morse"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "dev.frogman.morse"
