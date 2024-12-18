@@ -1,33 +1,36 @@
 package dev.frogman.morse.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import kotlinx.serialization.Serializable
 
+sealed interface MainDestination {
+    @Serializable data object Home: MainDestination
+    @Serializable data object Learn: MainDestination
+    @Serializable data object Setting: MainDestination
+}
 
 @Composable
 fun MainNavigation(
+    modifier: Modifier,
     navController: NavHostController
 ) {
     NavHost(
         navController = navController,
-        startDestination = Route.Execute.name
+        startDestination = MainDestination.Home
     ) {
-        composable(Route.Execute.name) {
+        composable<MainDestination.Home> {
 
         }
-        composable(Route.Learning.name) {
+        composable<MainDestination.Learn> {
 
         }
-        composable(Route.Setting.name) {
+        composable<MainDestination.Setting> {
 
         }
     }
 }
 
-enum class Route {
-    Execute,
-    Learning,
-    Setting,
-}
