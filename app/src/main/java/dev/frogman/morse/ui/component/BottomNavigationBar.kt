@@ -4,46 +4,45 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dev.frogman.morse.ui.navigation.MainDestination
+
+private data class TopLevelRoute<T : Any>(val name: String, val route: T, val icon: ImageVector)
 
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    var selectedItem by remember { mutableIntStateOf(0) }
-    val items = listOf("Home", "Learn", "Setting")
-    val selectedIcons = listOf(Icons.Filled.Home, Icons.Filled.Info, Icons.Filled.Settings)
-    val unselectedIcons = listOf(Icons.Outlined.Home, Icons.Outlined.Info, Icons.Outlined.Settings)
+    val topLevelRoutes = listOf(
+        TopLevelRoute("Home",MainDestination.Home,Icons.Filled.Home),
+        TopLevelRoute("Info",MainDestination.Learn,Icons.Filled.Info),
+        TopLevelRoute("Setting",MainDestination.Setting,Icons.Filled.Settings),
+    )
+
     NavigationBar {
-        items.forEachIndexed { index, item ->
+        topLevelRoutes.forEach { topLevelRoute ->
             NavigationBarItem(
-                icon = {
-                    Icon(
-                        if (selectedItem == index) selectedIcons[index] else unselectedIcons[index],
-                        contentDescription = item
-                    )
-                },
-                label = { Text(item) },
-                selected = selectedItem == index,
-                onClick = { selectedItem = index }
+                icon = { Icon(topLevelRoute.icon, topLevelRoute.name) },
+                label = { Text(topLevelRoute.name) },
+                selected = currentDestination?.hasRoute(topLevelRoute.route::class) == true,
+                onClick = {
+                    navController.navigate(topLevelRoute.route) {
+                        launchSingleTop = true
+                        popUpTo(MainDestination.Home)
+                    }
+                }
             )
         }
     }
